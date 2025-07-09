@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Bird - Advanced Gaming Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="neural-grid"></div>
+        <div class="floating-particles"></div>
+        <canvas id="bgCanvas" class="bg-canvas"></canvas>
+    </div>
+
+    <!-- Main Game Interface -->
+    <div class="game-interface">
+        <!-- Top HUD -->
+        <header class="game-header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <div class="logo-core"></div>
+                    <div class="logo-ring"></div>
+                </div>
+                <div class="logo-text">
+                    <h1 class="game-title">NEXUS BIRD</h1>
+                    <span class="game-subtitle">Neural Flight System</span>
+                </div>
+            </div>
+            
+            <div class="hud-stats">
+                <div class="stat-card primary">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="score">0</span>
+                        <span class="stat-label">Score</span>
+                    </div>
+                    <div class="stat-progress">
+                        <div class="progress-bar" id="scoreProgress"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🌊</div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="level">1</span>
+                        <span class="stat-label">Wave</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="lives">3</span>
+                        <span class="stat-label">Lives</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="highScore">0</span>
+                        <span class="stat-label">Best</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <button class="control-btn" id="pauseBtn" title="Pause Game">
+                    <span class="btn-icon">⏸️</span>
+                </button>
+                <button class="control-btn" id="settingsBtn" title="Settings">
+                    <span class="btn-icon">⚙️</span>
+                </button>
+                <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
+                    <span class="btn-icon">⛶</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Game Area -->
+        <main class="game-main">
+            <div class="game-viewport">
+                <canvas id="gameCanvas" width="500" height="700"></canvas>
+                <div class="viewport-overlay">
+                    <div class="crosshair"></div>
+                    <div class="radar-system">
+                        <div class="radar-sweep"></div>
+                        <div class="radar-dots"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Side Panels -->
+            <aside class="side-panel left">
+                <div class="panel-section">
+                    <h3 class="panel-title">Power Matrix</h3>
+                    <div class="power-grid">
+                        <div class="power-slot" id="slot1" data-type="shield">
+                            <div class="slot-glow"></div>
+                            <div class="slot-content">🛡️</div>
+                        </div>
+                        <div class="power-slot" id="slot2" data-type="boost">
+                            <div class="slot-glow"></div>
+                            <div class="slot-content">⚡</div>
+                        </div>
+                        <div class="power-slot" id="slot3" data-type="magnet">
+                            <div class="slot-glow"></div>
+                            <div class="slot-content">🧲</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3 class="panel-title">Neural Activity</h3>
+                    <div class="neural-display">
+                        <canvas id="neuralCanvas" width="200" height="150"></canvas>
+                        <div class="neural-stats">
+                            <div class="neural-stat">
+                                <span class="neural-label">Sync</span>
+                                <span class="neural-value" id="syncRate">98%</span>
+                            </div>
+                            <div class="neural-stat">
+                                <span class="neural-label">Nodes</span>
+                                <span class="neural-value" id="nodeCount">256</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <aside class="side-panel right">
+                <div class="panel-section">
+                    <h3 class="panel-title">Mission Log</h3>
+                    <div class="achievement-feed" id="achievementFeed">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🎯</div>
+                            <div class="achievement-text">System Initialized</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3 class="panel-title">Control Matrix</h3>
+                    <div class="control-guide">
+                        <div class="control-item">
+                            <kbd class="key-display">SPACE</kbd>
+                            <span class="control-desc">Primary Thrust</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key-display">CLICK</kbd>
+                            <span class="control-desc">Neural Jump</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key-display">↑</kbd>
+                            <span class="control-desc">Boost Mode</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key-display">↓</kbd>
+                            <span class="control-desc">Dive Mode</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal-overlay" id="gameOverModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Mission Complete</h2>
+                <div class="modal-subtitle">Neural pathway terminated</div>
+            </div>
+            <div class="modal-body">
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="result-label">Final Score</span>
+                        <span class="result-value" id="finalScore">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Wave Reached</span>
+                        <span class="result-value" id="finalLevel">1</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Best Record</span>
+                        <span class="result-value" id="modalHighScore">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Efficiency</span>
+                        <span class="result-value" id="efficiency">0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="neo-btn primary" onclick="restartGame()">
+                    <span class="btn-glow"></span>
+                    <span class="btn-text">🔄 Reinitialize</span>
+                </button>
+                <button class="neo-btn secondary" onclick="showLeaderboard()">
+                    <span class="btn-glow"></span>
+                    <span class="btn-text">🏆 Rankings</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div class="notification-container" id="notifications"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
