@@ -1,217 +1,1177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1YWRZF844F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-1YWRZF844F');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Bird - Advanced Gaming Experience</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Wind Walker - A Ghibli Flight Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Dancing+Script:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Kalam', cursive;
+            overflow: hidden;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 30%, #F0E68C 70%, #FFB6C1 100%);
+            height: 100vh;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+        }
+        
+        /* Main game canvas */
+        canvas {
+            background: transparent;
+            display: block;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        /* Floating background elements */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .petal {
+            position: absolute;
+            width: 8px;
+            height: 12px;
+            background: linear-gradient(45deg, #FFB6C1, #FF69B4);
+            border-radius: 50% 10px 50% 10px;
+            animation: floatPetal 15s infinite linear;
+            opacity: 0.6;
+        }
+        
+        @keyframes floatPetal {
+            0% {
+                transform: translateY(-100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(100vh) translateX(150px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            animation: driftCloud 25s ease-in-out infinite;
+        }
+        
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+        }
+        
+        @keyframes driftCloud {
+            0%, 100% { transform: translateX(0px) translateY(0px); }
+            25% { transform: translateX(30px) translateY(-15px); }
+            50% { transform: translateX(-20px) translateY(10px); }
+            75% { transform: translateX(40px) translateY(-20px); }
+        }
+        
+        /* UI Panels */
+        .ui-panel {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(144, 238, 144, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .left-panel {
+            top: 20px;
+            left: 20px;
+            width: 200px;
+        }
+        
+        .right-panel {
+            top: 20px;
+            right: 20px;
+            width: 200px;
+        }
+        
+        .panel-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: #2F4F2F;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #556B2F;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            color: #2F4F2F;
+            font-weight: 700;
+        }
+        
+        /* Energy and Lives bars */
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(144, 238, 144, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 5px;
+            border: 1px solid rgba(47, 79, 47, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        .energy-fill {
+            background: linear-gradient(90deg, #98FB98, #90EE90);
+        }
+        
+        .lives-fill {
+            background: linear-gradient(90deg, #FFB6C1, #FF69B4);
+        }
+        
+        /* Power-ups */
+        .power-ups {
+            margin-top: 15px;
+        }
+        
+        .power-slot {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(47, 79, 47, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+        
+        .power-slot:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .power-slot.active {
+            background: rgba(152, 251, 152, 0.8);
+            border-color: #228B22;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(34, 139, 34, 0.5); }
+            to { box-shadow: 0 0 15px rgba(34, 139, 34, 0.8); }
+        }
+        
+        /* Controls */
+        .controls {
+            margin-top: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, rgba(152, 251, 152, 0.8), rgba(144, 238, 144, 0.6));
+            border: 2px solid rgba(47, 79, 47, 0.3);
+            color: #2F4F2F;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-family: 'Kalam', cursive;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Start screen */
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .game-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            color: #2F4F2F;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+        
+        .game-subtitle {
+            font-size: 1.3rem;
+            color: #556B2F;
+            margin-bottom: 30px;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .instructions {
+            color: #2F4F2F;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #98FB98, #90EE90);
+            border: 3px solid #228B22;
+            color: #2F4F2F;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-family: 'Kalam', cursive;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Game over screen */
+        .game-over {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        /* Mobile UI */
+        .mobile-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 15px;
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .mobile-stat {
+            text-align: center;
+            color: #2F4F2F;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .left-panel, .right-panel {
+                display: none;
+            }
+            
+            .mobile-ui {
+                display: flex;
+            }
+            
+            .game-title { font-size: 3rem; }
+            .instructions { font-size: 0.9rem; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Background Effects -->
-    <div class="bg-effects">
-        <div class="neural-grid"></div>
-        <div class="floating-particles"></div>
-        <canvas id="bgCanvas" class="bg-canvas"></canvas>
-    </div>
-
-    <!-- Main Game Interface -->
-    <div class="game-interface">
-        <!-- Top HUD -->
-        <header class="game-header">
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <div class="logo-core"></div>
-                    <div class="logo-ring"></div>
-                </div>
-                <div class="logo-text">
-                    <h1 class="game-title">NEXUS BIRD</h1>
-                    <span class="game-subtitle">Neural Flight System</span>
-                </div>
+    <div class="game-container">
+        <!-- Floating background elements -->
+        <div class="floating-elements" id="floatingElements"></div>
+        
+        <!-- Game canvas -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Left panel -->
+        <div class="ui-panel left-panel">
+            <div class="panel-title">🌸 Flight Status</div>
+            <div class="stat-item">
+                <span>Altitude:</span>
+                <span class="stat-value" id="score">0</span>
             </div>
-            
-            <div class="hud-stats">
-                <div class="stat-card primary">
-                    <div class="stat-icon">⚡</div>
-                    <div class="stat-data">
-                        <span class="stat-value" id="score">0</span>
-                        <span class="stat-label">Score</span>
-                    </div>
-                    <div class="stat-progress">
-                        <div class="progress-bar" id="scoreProgress"></div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">🌊</div>
-                    <div class="stat-data">
-                        <span class="stat-value" id="level">1</span>
-                        <span class="stat-label">Wave</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">💎</div>
-                    <div class="stat-data">
-                        <span class="stat-value" id="lives">3</span>
-                        <span class="stat-label">Lives</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">👑</div>
-                    <div class="stat-data">
-                        <span class="stat-value" id="highScore">0</span>
-                        <span class="stat-label">Best</span>
-                    </div>
-                </div>
+            <div class="stat-item">
+                <span>Wind Level:</span>
+                <span class="stat-value" id="level">1</span>
             </div>
-            
-            <div class="control-panel">
-                <button class="control-btn" id="pauseBtn" title="Pause Game">
-                    <span class="btn-icon">⏸️</span>
-                </button>
-                <button class="control-btn" id="settingsBtn" title="Settings">
-                    <span class="btn-icon">⚙️</span>
-                </button>
-                <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
-                    <span class="btn-icon">⛶</span>
-                </button>
+            <div class="stat-item">
+                <span>Spirit Energy:</span>
             </div>
-        </header>
-
-        <!-- Game Area -->
-        <main class="game-main">
-            <div class="game-viewport">
-                <canvas id="gameCanvas" width="500" height="700"></canvas>
-                <div class="viewport-overlay">
-                    <div class="crosshair"></div>
-                    <div class="radar-system">
-                        <div class="radar-sweep"></div>
-                        <div class="radar-dots"></div>
-                    </div>
-                </div>
+            <div class="progress-bar">
+                <div class="progress-fill energy-fill" id="energyBar" style="width: 100%;"></div>
             </div>
-            
-            <!-- Side Panels -->
-            <aside class="side-panel left">
-                <div class="panel-section">
-                    <h3 class="panel-title">Power Matrix</h3>
-                    <div class="power-grid">
-                        <div class="power-slot" id="slot1" data-type="shield">
-                            <div class="slot-glow"></div>
-                            <div class="slot-content">🛡️</div>
-                        </div>
-                        <div class="power-slot" id="slot2" data-type="boost">
-                            <div class="slot-glow"></div>
-                            <div class="slot-content">⚡</div>
-                        </div>
-                        <div class="power-slot" id="slot3" data-type="magnet">
-                            <div class="slot-glow"></div>
-                            <div class="slot-content">🧲</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="panel-section">
-                    <h3 class="panel-title">Neural Activity</h3>
-                    <div class="neural-display">
-                        <canvas id="neuralCanvas" width="200" height="150"></canvas>
-                        <div class="neural-stats">
-                            <div class="neural-stat">
-                                <span class="neural-label">Sync</span>
-                                <span class="neural-value" id="syncRate">98%</span>
-                            </div>
-                            <div class="neural-stat">
-                                <span class="neural-label">Nodes</span>
-                                <span class="neural-value" id="nodeCount">256</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-            
-            <aside class="side-panel right">
-                <div class="panel-section">
-                    <h3 class="panel-title">Mission Log</h3>
-                    <div class="achievement-feed" id="achievementFeed">
-                        <div class="achievement-item">
-                            <div class="achievement-icon">🎯</div>
-                            <div class="achievement-text">System Initialized</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="panel-section">
-                    <h3 class="panel-title">Control Matrix</h3>
-                    <div class="control-guide">
-                        <div class="control-item">
-                            <kbd class="key-display">SPACE</kbd>
-                            <span class="control-desc">Primary Thrust</span>
-                        </div>
-                        <div class="control-item">
-                            <kbd class="key-display">CLICK</kbd>
-                            <span class="control-desc">Neural Jump</span>
-                        </div>
-                        <div class="control-item">
-                            <kbd class="key-display">↑</kbd>
-                            <span class="control-desc">Boost Mode</span>
-                        </div>
-                        <div class="control-item">
-                            <kbd class="key-display">↓</kbd>
-                            <span class="control-desc">Dive Mode</span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </main>
-    </div>
-
-    <!-- Game Over Modal -->
-    <div class="modal-overlay" id="gameOverModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">Mission Complete</h2>
-                <div class="modal-subtitle">Neural pathway terminated</div>
+            <div class="stat-item" style="margin-top: 10px;">
+                <span>Life Force:</span>
             </div>
-            <div class="modal-body">
-                <div class="result-grid">
-                    <div class="result-item">
-                        <span class="result-label">Final Score</span>
-                        <span class="result-value" id="finalScore">0</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">Wave Reached</span>
-                        <span class="result-value" id="finalLevel">1</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">Best Record</span>
-                        <span class="result-value" id="modalHighScore">0</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">Efficiency</span>
-                        <span class="result-value" id="efficiency">0%</span>
-                    </div>
-                </div>
+            <div class="progress-bar">
+                <div class="progress-fill lives-fill" id="livesBar" style="width: 100%;"></div>
             </div>
-            <div class="modal-actions">
-                <button class="neo-btn primary" onclick="restartGame()">
-                    <span class="btn-glow"></span>
-                    <span class="btn-text">🔄 Reinitialize</span>
-                </button>
-                <button class="neo-btn secondary" onclick="showLeaderboard()">
-                    <span class="btn-glow"></span>
-                    <span class="btn-text">🏆 Rankings</span>
-                </button>
+        </div>
+        
+        <!-- Right panel -->
+        <div class="ui-panel right-panel">
+            <div class="panel-title">✨ Wind Powers</div>
+            <div class="power-ups">
+                <div class="power-slot" id="shield" onclick="usePower('shield')">🛡️</div>
+                <div class="power-slot" id="boost" onclick="usePower('boost')">⚡</div>
+                <div class="power-slot" id="magnet" onclick="usePower('magnet')">🧲</div>
+                <div class="power-slot" id="timeWarp" onclick="usePower('timeWarp')">⏰</div>
             </div>
+            <div class="controls">
+                <button class="btn" onclick="togglePause()" id="pauseBtn">⏸️ Pause</button>
+                <button class="btn" onclick="toggleFullscreen()">🔍 Full Sky</button>
+            </div>
+        </div>
+        
+        <!-- Mobile UI -->
+        <div class="mobile-ui">
+            <div class="mobile-stat">
+                <div>🌸 <span id="mobileScore">0</span></div>
+            </div>
+            <div class="mobile-stat">
+                <div>💨 Level <span id="mobileLevel">1</span></div>
+            </div>
+            <div class="mobile-stat">
+                <div>✨ <span id="mobileEnergy">100</span>%</div>
+            </div>
+            <div class="mobile-stat">
+                <button class="btn" onclick="togglePause()" style="padding: 5px 10px; font-size: 0.8rem;">⏸️</button>
+            </div>
+        </div>
+        
+        <!-- Start screen -->
+        <div class="start-screen" id="startScreen">
+            <div class="game-title">🕊️ Wind Walker</div>
+            <div class="game-subtitle">Journey through the enchanted skies</div>
+            <div class="instructions">
+                Guide the forest spirit through magical bamboo groves<br>
+                🎋 Tap SPACE or CLICK to soar upward<br>
+                🌿 Use ↑↓ arrows for special flight patterns<br>
+                ✨ Collect wind orbs to gain mystical powers<br>
+                🌸 Find harmony between earth and sky
+            </div>
+            <button class="start-btn" onclick="startGame()">🌟 Begin Flight</button>
+        </div>
+        
+        <!-- Game over screen -->
+        <div class="game-over" id="gameOver">
+            <div class="game-title">🌙 Flight Complete</div>
+            <div class="game-subtitle">The wind spirits carry your story...</div>
+            <div style="font-size: 1.5rem; margin: 20px 0; color: #2F4F2F;">
+                Highest Altitude: <span id="finalScore">0</span> 🌸
+            </div>
+            <button class="start-btn" onclick="restartGame()">🌱 New Journey</button>
         </div>
     </div>
 
-    <!-- Notification System -->
-    <div class="notification-container" id="notifications"></div>
-
-    <script src="script.js"></script>
+    <script>
+        // Game state
+        const gameState = {
+            canvas: null,
+            ctx: null,
+            bird: null,
+            pipes: [],
+            powerUps: [],
+            particles: [],
+            score: 0,
+            level: 1,
+            lives: 3,
+            energy: 100,
+            isPlaying: false,
+            isPaused: false,
+            gameSpeed: 2,
+            activePowers: {},
+            highScore: parseInt(localStorage.getItem('windWalkerHighScore')) || 0,
+            frameCount: 0
+        };
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGame();
+            createFloatingElements();
+        });
+        
+        function initializeGame() {
+            gameState.canvas = document.getElementById('gameCanvas');
+            gameState.ctx = gameState.canvas.getContext('2d');
+            
+            // Set canvas size
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Initialize bird
+            gameState.bird = {
+                x: 150,
+                y: 300,
+                width: 40,
+                height: 30,
+                velocity: 0,
+                gravity: 0.4,
+                jump: -8,
+                invulnerable: false,
+                invulnerabilityTime: 0
+            };
+            
+            setupControls();
+            gameLoop();
+        }
+        
+        function resizeCanvas() {
+            gameState.canvas.width = window.innerWidth;
+            gameState.canvas.height = window.innerHeight;
+            
+            // Update bird position if canvas size changed
+            if (gameState.bird) {
+                gameState.bird.x = gameState.canvas.width * 0.2;
+                gameState.bird.y = gameState.canvas.height / 2;
+            }
+        }
+        
+        function createFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            
+            // Create floating petals
+            for (let i = 0; i < 20; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDelay = Math.random() * 15 + 's';
+                petal.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(petal);
+            }
+            
+            // Create floating clouds
+            for (let i = 0; i < 5; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                
+                const size = 80 + Math.random() * 60;
+                cloud.style.width = size + 'px';
+                cloud.style.height = size * 0.6 + 'px';
+                cloud.style.left = Math.random() * 70 + '%';
+                cloud.style.top = Math.random() * 40 + '%';
+                cloud.style.animationDelay = Math.random() * 25 + 's';
+                
+                container.appendChild(cloud);
+            }
+        }
+        
+        function setupControls() {
+            // Keyboard controls
+            document.addEventListener('keydown', function(e) {
+                if (!gameState.isPlaying || gameState.isPaused) return;
+                
+                switch(e.code) {
+                    case 'Space':
+                        e.preventDefault();
+                        jump();
+                        break;
+                    case 'ArrowUp':
+                        if (gameState.energy >= 20) {
+                            superJump();
+                        }
+                        break;
+                    case 'ArrowDown':
+                        dive();
+                        break;
+                    case 'KeyP':
+                        togglePause();
+                        break;
+                }
+            });
+            
+            // Canvas click
+            gameState.canvas.addEventListener('click', function() {
+                if (gameState.isPlaying && !gameState.isPaused) {
+                    jump();
+                }
+            });
+            
+            // Touch controls
+            gameState.canvas.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                if (gameState.isPlaying && !gameState.isPaused) {
+                    jump();
+                }
+            });
+        }
+        
+        function jump() {
+            gameState.bird.velocity = gameState.bird.jump;
+            createParticles(gameState.bird.x, gameState.bird.y, '#98FB98', 5);
+        }
+        
+        function superJump() {
+            gameState.bird.velocity = gameState.bird.jump * 1.5;
+            gameState.energy -= 20;
+            createParticles(gameState.bird.x, gameState.bird.y, '#FFD700', 10);
+            updateUI();
+        }
+        
+        function dive() {
+            gameState.bird.velocity = Math.min(gameState.bird.velocity + 3, 12);
+        }
+        
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            gameState.isPlaying = true;
+            gameState.isPaused = false;
+            
+            // Reset game state
+            gameState.score = 0;
+            gameState.level = 1;
+            gameState.lives = 3;
+            gameState.energy = 100;
+            gameState.pipes = [];
+            gameState.powerUps = [];
+            gameState.particles = [];
+            gameState.bird.y = gameState.canvas.height / 2;
+            gameState.bird.velocity = 0;
+            gameState.bird.invulnerable = false;
+            gameState.activePowers = {};
+            gameState.frameCount = 0;
+            
+            updateUI();
+        }
+        
+        function restartGame() {
+            document.getElementById('gameOver').style.display = 'none';
+            startGame();
+        }
+        
+        function endGame() {
+            gameState.isPlaying = false;
+            
+            // Update high score
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('windWalkerHighScore', gameState.highScore.toString());
+            }
+            
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('gameOver').style.display = 'flex';
+        }
+        
+        function updateBird() {
+            if (gameState.isPaused) return;
+            
+            // Apply gravity
+            gameState.bird.velocity += gameState.bird.gravity;
+            gameState.bird.y += gameState.bird.velocity;
+            
+            // Boundary collision
+            if (gameState.bird.y <= 0 || gameState.bird.y >= gameState.canvas.height - gameState.bird.height) {
+                if (!gameState.bird.invulnerable && !gameState.activePowers.shield) {
+                    loseLife();
+                }
+            }
+            
+            // Regenerate energy
+            gameState.energy = Math.min(100, gameState.energy + 0.1);
+            
+            // Update invulnerability
+            if (gameState.bird.invulnerable) {
+                gameState.bird.invulnerabilityTime--;
+                if (gameState.bird.invulnerabilityTime <= 0) {
+                    gameState.bird.invulnerable = false;
+                }
+            }
+        }
+        
+        function updatePipes() {
+            if (gameState.isPaused) return;
+            
+            // Move pipes
+            for (let i = gameState.pipes.length - 1; i >= 0; i--) {
+                const pipe = gameState.pipes[i];
+                pipe.x -= gameState.gameSpeed;
+                
+                // Check for scoring
+                if (!pipe.scored && pipe.x + pipe.width < gameState.bird.x) {
+                    pipe.scored = true;
+                    gameState.score++;
+                    
+                    if (gameState.score % 10 === 0) {
+                        gameState.level++;
+                        gameState.gameSpeed += 0.2;
+                    }
+                    
+                    createParticles(gameState.bird.x, gameState.bird.y, '#FFB6C1', 8);
+                    updateUI();
+                }
+                
+                // Remove off-screen pipes
+                if (pipe.x + pipe.width < 0) {
+                    gameState.pipes.splice(i, 1);
+                }
+                
+                // Collision detection
+                if (checkCollision(gameState.bird, pipe)) {
+                    if (!gameState.bird.invulnerable && !gameState.activePowers.shield) {
+                        loseLife();
+                    }
+                }
+            }
+            
+            // Generate new pipes
+            if (gameState.frameCount % 180 === 0) { // Every 3 seconds at 60fps
+                generatePipe();
+            }
+        }
+        
+        function generatePipe() {
+            const gapSize = 200;
+            const minHeight = 50;
+            const maxHeight = gameState.canvas.height - gapSize - minHeight;
+            const topHeight = minHeight + Math.random() * (maxHeight - minHeight);
+            
+            // Top pipe (bamboo)
+            gameState.pipes.push({
+                x: gameState.canvas.width,
+                y: 0,
+                width: 60,
+                height: topHeight,
+                scored: false,
+                type: 'top'
+            });
+            
+            // Bottom pipe (bamboo)
+            gameState.pipes.push({
+                x: gameState.canvas.width,
+                y: topHeight + gapSize,
+                width: 60,
+                height: gameState.canvas.height - topHeight - gapSize,
+                scored: false,
+                type: 'bottom'
+            });
+            
+            // Sometimes generate power-ups
+            if (Math.random() < 0.3) {
+                generatePowerUp(gameState.canvas.width + 30, topHeight + gapSize/2);
+            }
+        }
+        
+        function generatePowerUp(x, y) {
+            const types = ['energy', 'shield', 'magnet'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            gameState.powerUps.push({
+                x: x,
+                y: y + (Math.random() - 0.5) * 100,
+                width: 30,
+                height: 30,
+                type: type,
+                rotation: 0
+            });
+        }
+        
+        function updatePowerUps() {
+            if (gameState.isPaused) return;
+            
+            for (let i = gameState.powerUps.length - 1; i >= 0; i--) {
+                const powerUp = gameState.powerUps[i];
+                powerUp.x -= gameState.gameSpeed;
+                powerUp.rotation += 0.1;
+                
+                // Magnet effect
+                if (gameState.activePowers.magnet) {
+                    const dx = gameState.bird.x - powerUp.x;
+                    const dy = gameState.bird.y - powerUp.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100 && distance > 0) {
+                        powerUp.x += (dx / distance) * 2;
+                        powerUp.y += (dy / distance) * 2;
+                    }
+                }
+                
+                // Collision with bird
+                if (checkCollision(gameState.bird, powerUp)) {
+                    collectPowerUp(powerUp.type);
+                    gameState.powerUps.splice(i, 1);
+                    createParticles(powerUp.x, powerUp.y, '#FFD700', 12);
+                    continue;
+                }
+                
+                // Remove off-screen
+                if (powerUp.x + powerUp.width < 0) {
+                    gameState.powerUps.splice(i, 1);
+                }
+            }
+        }
+        
+        function collectPowerUp(type) {
+            switch(type) {
+                case 'energy':
+                    gameState.energy = Math.min(100, gameState.energy + 30);
+                    break;
+                case 'shield':
+                    activatePower('shield', 5000);
+                    break;
+                case 'magnet':
+                    activatePower('magnet', 8000);
+                    break;
+            }
+            updateUI();
+        }
+        
+        function activatePower(type, duration) {
+            gameState.activePowers[type] = duration;
+            const powerSlot = document.getElementById(type);
+            if (powerSlot) {
+                powerSlot.classList.add('active');
+            }
+            
+            setTimeout(() => {
+                delete gameState.activePowers[type];
+                if (powerSlot) {
+                    powerSlot.classList.remove('active');
+                }
+            }, duration);
+        }
+        
+        function usePower(type) {
+            if (gameState.activePowers[type] || gameState.isPaused || !gameState.isPlaying) return;
+            
+            switch(type) {
+                case 'shield':
+                    if (gameState.energy >= 30) {
+                        gameState.energy -= 30;
+                        activatePower('shield', 5000);
+                    }
+                    break;
+                case 'boost':
+                    if (gameState.energy >= 25) {
+                        gameState.energy -= 25;
+                        gameState.bird.velocity = gameState.bird.jump * 2;
+                        createParticles(gameState.bird.x, gameState.bird.y, '#00FFFF', 15);
+                    }
+                    break;
+                case 'magnet':
+                    if (gameState.energy >= 40) {
+                        gameState.energy -= 40;
+                        activatePower('magnet', 10000);
+                    }
+                    break;
+                case 'timeWarp':
+                    if (gameState.energy >= 50) {
+                        gameState.energy -= 50;
+                        const originalSpeed = gameState.gameSpeed;
+                        gameState.gameSpeed *= 0.5;
+                        setTimeout(() => {
+                            gameState.gameSpeed = originalSpeed;
+                        }, 3000);
+                    }
+                    break;
+            }
+            updateUI();
+        }
+        
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        function loseLife() {
+            gameState.lives--;
+            gameState.bird.invulnerable = true;
+            gameState.bird.invulnerabilityTime = 120; // 2 seconds at 60fps
+            
+            createParticles(gameState.bird.x, gameState.bird.y, '#FF69B4', 20);
+            
+            if (gameState.lives <= 0) {
+                endGame();
+            } else {
+                updateUI();
+            }
+        }
+        
+        function createParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 60,
+                    maxLife: 60,
+                    color: color,
+                    size: Math.random() * 4 + 2
+                });
+            }
+        }
+        
+        function updateParticles() {
+            for (let i = gameState.particles.length - 1; i >= 0; i--) {
+                const particle = gameState.particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life--;
+                particle.vx *= 0.95;
+                particle.vy *= 0.95;
+                
+                if (particle.life <= 0) {
+                    gameState.particles.splice(i, 1);
+                }
+            }
+        }
+        
+        function togglePause() {
+            if (!gameState.isPlaying) return;
+            
+            gameState.isPaused = !gameState.isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (gameState.isPaused) {
+                pauseBtn.textContent = '▶️ Resume';
+            } else {
+                pauseBtn.textContent = '⏸️ Pause';
+            }
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        function updateUI() {
+            // Desktop UI
+            const scoreEl = document.getElementById('score');
+            const levelEl = document.getElementById('level');
+            const energyBarEl = document.getElementById('energyBar');
+            const livesBarEl = document.getElementById('livesBar');
+            
+            if (scoreEl) scoreEl.textContent = gameState.score;
+            if (levelEl) levelEl.textContent = gameState.level;
+            if (energyBarEl) energyBarEl.style.width = gameState.energy + '%';
+            if (livesBarEl) livesBarEl.style.width = (gameState.lives / 3) * 100 + '%';
+            
+            // Mobile UI
+            const mobileScoreEl = document.getElementById('mobileScore');
+            const mobileLevelEl = document.getElementById('mobileLevel');
+            const mobileEnergyEl = document.getElementById('mobileEnergy');
+            
+            if (mobileScoreEl) mobileScoreEl.textContent = gameState.score;
+            if (mobileLevelEl) mobileLevelEl.textContent = gameState.level;
+            if (mobileEnergyEl) mobileEnergyEl.textContent = Math.floor(gameState.energy);
+        }
+        
+        // Rendering functions
+        function drawBackground() {
+            const ctx = gameState.ctx;
+            const canvas = gameState.canvas;
+            
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#E6F3FF');
+            gradient.addColorStop(0.3, '#F0FFF0');
+            gradient.addColorStop(0.7, '#FFFACD');
+            gradient.addColorStop(1, '#FFE4E1');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Distant mountains
+            ctx.save();
+            ctx.globalAlpha = 0.3;
+            ctx.fillStyle = '#8FBC8F';
+            ctx.beginPath();
+            for (let x = 0; x <= canvas.width; x += 50) {
+                const height = 100 + Math.sin(x * 0.01) * 50;
+                if (x === 0) ctx.moveTo(x, canvas.height - height);
+                else ctx.lineTo(x, canvas.height - height);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+        
+        function drawBird() {
+            const ctx = gameState.ctx;
+            const bird = gameState.bird;
+            
+            ctx.save();
+            
+            // Bird body (spirit orb)
+            if (gameState.bird.invulnerable) {
+                ctx.globalAlpha = 0.5 + Math.sin(gameState.frameCount * 0.2) * 0.3;
+            }
+            
+            if (gameState.activePowers.shield) {
+                // Shield effect
+                ctx.strokeStyle = '#87CEEB';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(bird.x + bird.width/2, bird.y + bird.height/2, bird.width/2 + 10, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Main bird (spirit)
+            const gradient = ctx.createRadialGradient(
+                bird.x + bird.width/2, bird.y + bird.height/2, 0,
+                bird.x + bird.width/2, bird.y + bird.height/2, bird.width/2
+            );
+            gradient.addColorStop(0, '#FFFFFF');
+            gradient.addColorStop(0.7, '#98FB98');
+            gradient.addColorStop(1, '#90EE90');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.ellipse(bird.x + bird.width/2, bird.y + bird.height/2, bird.width/2, bird.height/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Wings
+            ctx.fillStyle = 'rgba(144, 238, 144, 0.8)';
+            const wingFlap = Math.sin(gameState.frameCount * 0.2) * 0.3;
+            
+            // Left wing
+            ctx.beginPath();
+            ctx.ellipse(bird.x + 5, bird.y + bird.height/2, 8, 15, wingFlap, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Right wing  
+            ctx.beginPath();
+            ctx.ellipse(bird.x + bird.width - 5, bird.y + bird.height/2, 8, 15, -wingFlap, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#2F4F2F';
+            ctx.beginPath();
+            ctx.arc(bird.x + bird.width/2 - 6, bird.y + bird.height/2 - 3, 2, 0, Math.PI * 2);
+            ctx.arc(bird.x + bird.width/2 + 6, bird.y + bird.height/2 - 3, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        function drawPipes() {
+            const ctx = gameState.ctx;
+            
+            gameState.pipes.forEach(pipe => {
+                // Bamboo texture
+                const gradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipe.width, 0);
+                gradient.addColorStop(0, '#228B22');
+                gradient.addColorStop(0.3, '#32CD32');
+                gradient.addColorStop(0.7, '#228B22');
+                gradient.addColorStop(1, '#006400');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(pipe.x, pipe.y, pipe.width, pipe.height);
+                
+                // Bamboo segments
+                ctx.strokeStyle = '#006400';
+                ctx.lineWidth = 2;
+                for (let y = pipe.y; y < pipe.y + pipe.height; y += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(pipe.x, y);
+                    ctx.lineTo(pipe.x + pipe.width, y);
+                    ctx.stroke();
+                }
+                
+                // Bamboo leaves
+                if (pipe.type === 'top') {
+                    ctx.fillStyle = '#90EE90';
+                    for (let i = 0; i < 3; i++) {
+                        const leafX = pipe.x + (i * 20) + 5;
+                        const leafY = pipe.y + pipe.height - 20;
+                        if (leafY >= pipe.y) {
+                            ctx.beginPath();
+                            ctx.ellipse(leafX, leafY, 8, 15, Math.PI/4, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
+            });
+        }
+        
+        function drawPowerUps() {
+            const ctx = gameState.ctx;
+            
+            gameState.powerUps.forEach(powerUp => {
+                ctx.save();
+                ctx.translate(powerUp.x + powerUp.width/2, powerUp.y + powerUp.height/2);
+                ctx.rotate(powerUp.rotation);
+                
+                // Glow effect
+                ctx.shadowColor = '#FFD700';
+                ctx.shadowBlur = 15;
+                
+                // Power-up orb
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, powerUp.width/2);
+                gradient.addColorStop(0, '#FFFFFF');
+                gradient.addColorStop(0.5, '#FFD700');
+                gradient.addColorStop(1, '#FFA500');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(0, 0, powerUp.width/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Power-up icon
+                ctx.fillStyle = '#8B4513';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const icons = {
+                    energy: '⚡',
+                    shield: '🛡️',
+                    magnet: '🧲'
+                };
+                
+                ctx.fillText(icons[powerUp.type] || '✨', 0, 0);
+                ctx.restore();
+            });
+        }
+        
+        function drawParticles() {
+            const ctx = gameState.ctx;
+            
+            gameState.particles.forEach(particle => {
+                ctx.save();
+                ctx.globalAlpha = particle.life / particle.maxLife;
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+        }
+        
+        function drawEffects() {
+            const ctx = gameState.ctx;
+            
+            // Time warp effect
+            if (gameState.gameSpeed < 2) {
+                ctx.save();
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = '#9370DB';
+                
+                for (let i = 0; i < 10; i++) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        Math.random() * gameState.canvas.width,
+                        Math.random() * gameState.canvas.height,
+                        Math.random() * 5 + 2,
+                        0, Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+        
+        function gameLoop() {
+            gameState.frameCount++;
+            
+            if (gameState.isPlaying) {
+                updateBird();
+                updatePipes();
+                updatePowerUps();
+                updateParticles();
+                
+                // Update power durations
+                Object.keys(gameState.activePowers).forEach(power => {
+                    gameState.activePowers[power] -= 16.67; // ~60fps
+                    if (gameState.activePowers[power] <= 0) {
+                        delete gameState.activePowers[power];
+                        const powerSlot = document.getElementById(power);
+                        if (powerSlot) {
+                            powerSlot.classList.remove('active');
+                        }
+                    }
+                });
+                
+                // Clear canvas
+                gameState.ctx.clearRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+                
+                // Draw everything
+                drawBackground();
+                drawPipes();
+                drawPowerUps();
+                drawBird();
+                drawParticles();
+                drawEffects();
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+    </script>
 </body>
 </html>
